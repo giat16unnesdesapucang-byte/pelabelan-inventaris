@@ -1,0 +1,31 @@
+<Window x:Class="DesktopAdmin.AssetHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Riwayat Peminjaman Aset" Height="450" Width="800"
+        WindowStartupLocation="CenterOwner" Background="#F3F4F6">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock x:Name="TxtTitle" Grid.Row="0" Text="Riwayat Peminjaman:" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,5"/>
+        <TextBlock x:Name="TxtSubtitle" Grid.Row="1" Text="Memuat..." FontSize="14" Foreground="#6B7280" Margin="0,0,0,20"/>
+        
+        <DataGrid x:Name="HistoryGrid" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" SelectionMode="Single"
+                  Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
+                  RowBackground="White" AlternatingRowBackground="#F9FAFB"
+                  HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Peminjam" Binding="{Binding BorrowerName}" Width="150"/>
+                <DataGridTextColumn Header="Tanggal Pinjam" Binding="{Binding BorrowDate, StringFormat=\{0:dd MMM yyyy HH:mm\}}" Width="150"/>
+                <DataGridTextColumn Header="Tanggal Kembali" Binding="{Binding ActualReturnDate, StringFormat=\{0:dd MMM yyyy HH:mm\}}" Width="150"/>
+                <DataGridTextColumn Header="Kondisi Keluar" Binding="{Binding ConditionOut}" Width="110"/>
+                <DataGridTextColumn Header="Kondisi Masuk" Binding="{Binding ConditionIn}" Width="110"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
