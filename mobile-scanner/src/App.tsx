@@ -9,31 +9,42 @@ import { DeviceActivationGate } from './components/DeviceActivationGate';
 import './index.css';
 
 const InstallPromptBanner = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
-    if (isStandalone) return;
+    if (isStandalone) {
+      setShowBanner(false);
+      return;
+    }
 
-    const handler = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+    // Always show banner when in browser
+    setShowBanner(true);
+
+    const onPromptReady = () => {
       setShowBanner(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener('beforeinstallprompt', onPromptReady);
+    window.addEventListener('pwa-installable', onPromptReady);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onPromptReady);
+      window.removeEventListener('pwa-installable', onPromptReady);
+    };
   }, []);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowBanner(false);
+    const prompt = (window as any).deferredInstallPrompt;
+    if (prompt) {
+      prompt.prompt();
+      const { outcome } = await prompt.userChoice;
+      if (outcome === 'accepted') {
+        setShowBanner(false);
+      }
+      (window as any).deferredInstallPrompt = null;
+    } else {
+      alert("📲 Petunjuk Pasang Aplikasi:\n\n1. Ketuk Menu Browser (ikon titik tiga ⋮ di pojok kanan atas Chrome, atau tombol Share 📤 di Safari).\n2. Pilih 'Tambahkan ke Layar Utama' (Add to Home screen) / 'Install App'.\n3. Buka aplikasi dari layar utama smartphone Anda!");
     }
-    setDeferredPrompt(null);
   };
 
   if (!showBanner) return null;
