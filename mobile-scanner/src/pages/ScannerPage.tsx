@@ -1,14 +1,65 @@
 import { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import { Html5Qrcode, Html5QrcodeSupportedFormats, type CameraDevice } from 'html5-qrcode';
 import { useNavigate } from 'react-router-dom';
-import { Camera, AlertCircle, RefreshCw } from 'lucide-react';
+import { Camera, AlertCircle, RefreshCw, SwitchCamera } from 'lucide-react';
 
 const ScannerPage = () => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [cameras, setCameras] = useState<CameraDevice[]>([]);
+  const [selectedCameraId, setSelectedCameraId] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scannedRef = useRef(false);
+
+  const startScannerWithCamera = async (scanner: Html5Qrcode, cameraIdOrConfig: any) => {
+    setIsInitializing(true);
+    setErrorMsg(null);
+
+    const qrCodeSuccessCallback = async (decodedText: string) => {
+      if (scannedRef.current) return;
+      scannedRef.current = true;
+
+      try {
+        if (scannerRef.current && scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+      } catch {
+        // ignore cleanup
+      }
+
+      let code = decodedText.trim();
+      if (code.includes('/asset/')) {
+        code = code.split('/asset/').pop() || code;
+      }
+      navigate(`/asset/${code}`);
+    };
+
+    const config = {
+      fps: 15,
+      qrbox: { width: 260, height: 260 },
+      aspectRatio: 1.0
+    };
+
+    try {
+      if (scanner.isScanning) {
+        await scanner.stop();
+      }
+      await scanner.start(cameraIdOrConfig, config, qrCodeSuccessCallback, () => {});
+      setIsInitializing(false);
+    } catch (err: any) {
+      console.warn("Gagal membuka kamera:", err);
+      // Fallback
+      try {
+        await scanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback, () => {});
+        setIsInitializing(false);
+      } catch (fallbackErr: any) {
+        console.error("Gagal total membuka kamera:", fallbackErr);
+        setErrorMsg("Tidak dapat mengakses kamera belakang. Pastikan izin kamera telah diizinkan di browser.");
+        setIsInitializing(false);
+      }
+    }
+  };
 
   useEffect(() => {
     const qrRegionId = "qr-reader-direct";
@@ -20,65 +71,31 @@ const ScannerPage = () => {
     });
     scannerRef.current = html5QrCode;
 
-    const startCamera = async () => {
-      setIsInitializing(true);
-      setErrorMsg(null);
-
-      const qrCodeSuccessCallback = async (decodedText: string) => {
-        if (scannedRef.current) return;
-        scannedRef.current = true;
-
-        try {
-          if (scannerRef.current && scannerRef.current.isScanning) {
-            await scannerRef.current.stop();
-          }
-        } catch {
-          // ignore cleanup errors
-        }
-
-        // Ambil ID jika payload berupa URL penuh atau kode SKU
-        let code = decodedText.trim();
-        if (code.includes('/asset/')) {
-          code = code.split('/asset/').pop() || code;
-        }
-        navigate(`/asset/${code}`);
-      };
-
-      const config = {
-        fps: 15,
-        qrbox: { width: 260, height: 260 },
-        aspectRatio: 1.0
-      };
-
+    const initCamera = async () => {
       try {
-        // Prioritaskan kamera belakang HP (environment)
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          config,
-          qrCodeSuccessCallback,
-          () => {} // scan frame error callback
-        );
-        setIsInitializing(false);
-      } catch (backCamError: any) {
-        console.warn("Kamera belakang tidak tersedia, mencoba kamera default...", backCamError);
-        try {
-          // Fallback ke kamera default (misal webcam laptop / kamera depan)
-          await html5QrCode.start(
-            { facingMode: "user" },
-            config,
-            qrCodeSuccessCallback,
-            () => {}
-          );
-          setIsInitializing(false);
-        } catch (err: any) {
-          console.error("Gagal membuka kamera:", err);
-          setErrorMsg("Tidak dapat mengakses kamera. Pastikan izin kamera telah diaktifkan di browser HP Anda.");
-          setIsInitializing(false);
+        const devices = await Html5Qrcode.getCameras();
+        if (devices && devices.length > 0) {
+          setCameras(devices);
+
+          // Cari kamera belakang berdasarkan label kata kunci
+          const rearCam = devices.find(d => 
+            /back|rear|environment|belakang|utama|primary|0/i.test(d.label)
+          ) || devices[devices.length - 1]; // Kamera belakang biasanya berada di indeks terakhir pada Android
+
+          const targetId = rearCam ? rearCam.id : devices[0].id;
+          setSelectedCameraId(targetId);
+          await startScannerWithCamera(html5QrCode, targetId);
+        } else {
+          // Jika daftar kamera kosong, gunakan facingMode constraint
+          await startScannerWithCamera(html5QrCode, { facingMode: "environment" });
         }
+      } catch (e: any) {
+        console.warn("getCameras() error, fallback to facingMode:", e);
+        await startScannerWithCamera(html5QrCode, { facingMode: "environment" });
       }
     };
 
-    startCamera();
+    initCamera();
 
     return () => {
       if (scannerRef.current) {
@@ -92,6 +109,17 @@ const ScannerPage = () => {
       }
     };
   }, [navigate]);
+
+  const handleSwitchCamera = async () => {
+    if (!scannerRef.current || cameras.length < 2) return;
+
+    const currentIndex = cameras.findIndex(c => c.id === selectedCameraId);
+    const nextIndex = (currentIndex + 1) % cameras.length;
+    const nextCamera = cameras[nextIndex];
+
+    setSelectedCameraId(nextCamera.id);
+    await startScannerWithCamera(scannerRef.current, nextCamera.id);
+  };
 
   return (
     <div className="page-container animate-slide-up" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '85vh' }}>
@@ -185,11 +213,36 @@ const ScannerPage = () => {
         )}
       </div>
 
+      {/* Camera Switcher Button (if device has multiple cameras) */}
+      {cameras.length > 1 && !errorMsg && !isInitializing && (
+        <button
+          onClick={handleSwitchCamera}
+          style={{
+            marginTop: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: 'var(--surface-color)',
+            color: 'var(--text-primary)',
+            border: '1px solid var(--surface-border)',
+            padding: '8px 16px',
+            borderRadius: '9999px',
+            fontSize: '13px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+          }}
+        >
+          <SwitchCamera size={16} color="var(--accent-color)" />
+          Ganti Lensa Kamera ({cameras.findIndex(c => c.id === selectedCameraId) + 1}/{cameras.length})
+        </button>
+      )}
+
       {/* Quick Tip for Village Staff */}
-      <div style={{ marginTop: 'var(--spacing-xl)', textAlign: 'center', maxWidth: '300px' }}>
+      <div style={{ marginTop: cameras.length > 1 ? '12px' : 'var(--spacing-xl)', textAlign: 'center', maxWidth: '300px' }}>
         <p style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <Camera size={16} color="var(--accent-color)" />
-          Kamera otomatis aktif &amp; fokus pada QR code
+          Kamera otomatis mendeteksi QR code
         </p>
       </div>
 
