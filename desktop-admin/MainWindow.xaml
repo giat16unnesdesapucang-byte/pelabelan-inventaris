@@ -38,7 +38,6 @@
                 <Button x:Name="BtnNavAssets" Content="Data Aset" Style="{StaticResource SidebarButton}" Click="BtnNavAssets_Click"/>
                 <Button x:Name="BtnNavCategories" Content="Kategori" Style="{StaticResource SidebarButton}" Click="BtnNavCategories_Click"/>
                 <Button x:Name="BtnNavLoans" Content="Sirkulasi Peminjaman" Style="{StaticResource SidebarButton}" Click="BtnNavLoans_Click"/>
-                <Button x:Name="BtnNavPrint" Content="Cetak Label QR" Style="{StaticResource SidebarButton}"/>
             </StackPanel>
         </Border>
 
