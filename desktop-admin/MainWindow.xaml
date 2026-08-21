@@ -38,6 +38,9 @@
                 <Button x:Name="BtnNavAssets" Content="Data Aset" Style="{StaticResource SidebarButton}" Click="BtnNavAssets_Click"/>
                 <Button x:Name="BtnNavCategories" Content="Kategori" Style="{StaticResource SidebarButton}" Click="BtnNavCategories_Click"/>
                 <Button x:Name="BtnNavLoans" Content="Sirkulasi Peminjaman" Style="{StaticResource SidebarButton}" Click="BtnNavLoans_Click"/>
+                
+                <Separator Background="#F3F4F6" Margin="0,15,0,15"/>
+                <Button x:Name="BtnNavSettings" Content="⚙️ PIN Petugas Mobile" Style="{StaticResource SidebarButton}" Click="BtnNavSettings_Click"/>
             </StackPanel>
         </Border>
 
@@ -208,7 +211,8 @@
                             <StackPanel>
                                 <TextBlock Text="Aksi Cepat" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,15"/>
                                 <Button Content="+ Tambah Aset Baru" Background="#10B981" Foreground="White" Padding="10,12" BorderThickness="0" Cursor="Hand" Click="BtnAddAsset_Click" Margin="0,0,0,10" FontWeight="SemiBold"/>
-                                <Button Content="Cetak Barcode" Background="#3B82F6" Foreground="White" Padding="10,12" BorderThickness="0" Cursor="Hand" Click="BtnPrintBatch_Click" FontWeight="SemiBold"/>
+                                <Button Content="Cetak Barcode" Background="#3B82F6" Foreground="White" Padding="10,12" BorderThickness="0" Cursor="Hand" Click="BtnPrintBatch_Click" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                <Button Content="⚙️ Atur PIN Petugas Mobile" Background="#F3F4F6" Foreground="#374151" BorderBrush="#D1D5DB" BorderThickness="1" Padding="10,10" Cursor="Hand" Click="BtnNavSettings_Click" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Border>
                     </Grid>

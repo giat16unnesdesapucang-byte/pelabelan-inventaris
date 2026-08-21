@@ -450,6 +450,13 @@ namespace DesktopAdmin
             BtnNavCategories.Style = (Style)FindResource("SidebarButtonActive");
         }
 
+        private void BtnNavSettings_Click(object sender, RoutedEventArgs e)
+        {
+            var settingsWindow = new SettingsWindow(_supabaseClient);
+            settingsWindow.Owner = this;
+            settingsWindow.ShowDialog();
+        }
+
         private async void BtnAddCategory_Click(object sender, RoutedEventArgs e)
         {
             var form = new CategoryFormWindow(_supabaseClient, null);

@@ -92,3 +92,28 @@ FOR INSERT WITH CHECK (bucket_id = 'asset-photos');
 CREATE POLICY "Public Update" ON storage.objects
 FOR UPDATE USING (bucket_id = 'asset-photos');
 
+-- ===================================================
+-- 4. Tabel Pengaturan Sistem & PIN Petugas Lapangan
+-- ===================================================
+CREATE TABLE IF NOT EXISTS system_settings (
+    key VARCHAR(50) PRIMARY KEY,
+    value TEXT NOT NULL,
+    description TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Default PIN Petugas Lapangan: '123456'
+INSERT INTO system_settings (key, value, description)
+VALUES ('staff_pin', '123456', 'PIN Keamanan Aktivasi Aplikasi Petugas Lapangan')
+ON CONFLICT (key) DO NOTHING;
+
+-- RLS Policies untuk system_settings
+ALTER TABLE system_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read system_settings" ON system_settings
+FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert/update system_settings" ON system_settings
+FOR ALL USING (true);
+
+

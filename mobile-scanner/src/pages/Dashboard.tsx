@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Package, ArrowUpRight, ArrowDownRight, AlertCircle, Search, Clock } from 'lucide-react';
+import { Package, ArrowUpRight, ArrowDownRight, AlertCircle, Search, Clock, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 
@@ -58,35 +58,41 @@ const Dashboard = () => {
         if (recentData) {
           const formattedActivities = recentData.map((item: any) => {
             const isReturned = item.status === 'Selesai';
-            const actionTime = isReturned ? item.actual_return_date : item.borrow_date;
-            const date = new Date(actionTime);
             return {
               id: item.id,
-              asset_name: item.assets?.name || 'Aset Tidak Diketahui',
+              asset_name: item.assets?.name || 'Aset Tanpa Nama',
               borrower: item.borrower_name,
               action: isReturned ? 'Dikembalikan' : 'Dipinjam',
-              time: date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+              time: new Date(isReturned ? item.actual_return_date : item.borrow_date).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short'
+              })
             } as RecentActivity;
           });
           setActivities(formattedActivities);
         }
 
-        const now = new Date().toISOString();
+        const today = new Date().toISOString();
         const { data: overdueData } = await supabase
           .from('loan_transactions')
-          .select('id, expected_return_date, borrower_name, assets(asset_code, name)')
+          .select('id, borrower_name, expected_return_date, assets(asset_code, name)')
           .eq('status', 'Aktif')
-          .lt('expected_return_date', now)
-          .limit(3);
+          .lt('expected_return_date', today)
+          .order('expected_return_date', { ascending: true })
+          .limit(5);
 
         if (overdueData) {
-          setOverdue(overdueData.map((item: any) => ({
+          const formattedOverdue = overdueData.map((item: any) => ({
             id: item.id,
-            asset_code: item.assets?.asset_code,
-            asset_name: item.assets?.name,
+            asset_code: item.assets?.asset_code || '-',
+            asset_name: item.assets?.name || 'Aset',
             borrower: item.borrower_name,
-            expected_return: new Date(item.expected_return_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
-          })));
+            expected_return: new Date(item.expected_return_date).toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'short'
+            })
+          }));
+          setOverdue(formattedOverdue);
         }
 
       } catch (err) {
@@ -106,6 +112,13 @@ const Dashboard = () => {
     }
   };
 
+  const handleLockDevice = () => {
+    if (window.confirm('Kunci kembali smartphone ini? Anda harus memasukkan PIN lagi untuk mengotorisasi ulang.')) {
+      localStorage.removeItem('desa_device_authorized');
+      window.location.reload();
+    }
+  };
+
   if (loading) {
     return (
       <div className="page-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -121,10 +134,33 @@ const Dashboard = () => {
   return (
     <div className="page-container animate-slide-up" style={{ paddingBottom: '120px' }}>
       <header style={{ marginBottom: 'var(--spacing-md)' }}>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>
-          Balai Desa Pucang
-        </p>
-        <h1 style={{ fontSize: '28px', lineHeight: 1.2 }}>Beranda Petugas</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 500, marginBottom: '2px' }}>
+              Balai Desa Pucang
+            </p>
+            <h1 style={{ fontSize: '26px', lineHeight: 1.2 }}>Beranda Petugas</h1>
+          </div>
+          <button
+            onClick={handleLockDevice}
+            title="Klik untuk mengunci/melepas otorisasi smartphone"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              color: 'var(--accent-color)',
+              padding: '6px 10px',
+              borderRadius: '9999px',
+              fontSize: '11px',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            <ShieldCheck size={13} /> Terotorisasi
+          </button>
+        </div>
       </header>
 
       {/* Hero Action */}

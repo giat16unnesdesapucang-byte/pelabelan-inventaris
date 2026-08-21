@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import ScannerPage from './pages/ScannerPage';
 import AssetDetails from './pages/AssetDetails';
 import History from './pages/History';
+import { DeviceActivationGate } from './components/DeviceActivationGate';
 import './index.css';
 
 const InstallPromptBanner = () => {
@@ -151,18 +152,20 @@ const BottomNav = () => {
 
 function App() {
   return (
-    <Router>
-      <div id="app">
-        <InstallPromptBanner />
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/scan" element={<ScannerPage />} />
-          <Route path="/asset/:id" element={<AssetDetails />} />
-          <Route path="/history" element={<History />} />
-        </Routes>
-        <BottomNav />
-      </div>
-    </Router>
+    <DeviceActivationGate>
+      <Router>
+        <div id="app">
+          <InstallPromptBanner />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/scan" element={<ScannerPage />} />
+            <Route path="/asset/:id" element={<AssetDetails />} />
+            <Route path="/history" element={<History />} />
+          </Routes>
+          <BottomNav />
+        </div>
+      </Router>
+    </DeviceActivationGate>
   );
 }
 
