@@ -1,0 +1,93 @@
+<Window x:Class="DesktopAdmin.ExportPeriodWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Filter Periode Laporan Peminjaman" Height="440" Width="520"
+        WindowStartupLocation="CenterOwner" Background="#F9FAFB" FontFamily="Segoe UI"
+        ResizeMode="NoResize">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock Text="Periode Laporan Peminjaman" FontSize="20" FontWeight="Bold" Foreground="#111827"/>
+            <TextBlock Text="Pilih rentang waktu data peminjaman yang ingin dimasukkan ke laporan Excel." FontSize="12" Foreground="#6B7280" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Body: Radio Options -->
+        <Border Grid.Row="1" Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="10" Padding="16" Margin="0,0,0,16">
+            <StackPanel>
+                <!-- Option 1: Bulanan (Recommended) -->
+                <RadioButton x:Name="RbMonthly" IsChecked="True" GroupName="PeriodGroup" Checked="Rb_Checked">
+                    <RadioButton.Content>
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Laporan Bulanan (Rekomendasi LPJ Desa)" FontWeight="SemiBold" FontSize="13" Foreground="#111827"/>
+                            <TextBlock Text="Mengekspor seluruh peminjaman pada satu bulan kalender." FontSize="11" Foreground="#6B7280"/>
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <!-- Monthly Pickers -->
+                <Grid x:Name="GridMonthlyControls" Margin="28,10,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox x:Name="CmbMonth" Grid.Column="0" Padding="8" FontSize="13"/>
+                    <ComboBox x:Name="CmbYear" Grid.Column="2" Padding="8" FontSize="13"/>
+                </Grid>
+
+                <Separator Background="#F3F4F6" Margin="0,4,0,12"/>
+
+                <!-- Option 2: Custom Date Range -->
+                <RadioButton x:Name="RbCustomRange" GroupName="PeriodGroup" Checked="Rb_Checked">
+                    <RadioButton.Content>
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Rentang Tanggal Kustom" FontWeight="SemiBold" FontSize="13" Foreground="#111827"/>
+                            <TextBlock Text="Tentukan tanggal mulai dan tanggal selesai secara spesifik." FontSize="11" Foreground="#6B7280"/>
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <!-- Range Pickers -->
+                <Grid x:Name="GridRangeControls" Margin="28,10,0,16" IsEnabled="False">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Dari Tanggal" FontSize="11" Foreground="#6B7280" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpStartDate" Padding="6" FontSize="12"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Sampai Tanggal" FontSize="11" Foreground="#6B7280" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpEndDate" Padding="6" FontSize="12"/>
+                    </StackPanel>
+                </Grid>
+
+                <Separator Background="#F3F4F6" Margin="0,4,0,12"/>
+
+                <!-- Option 3: All Time -->
+                <RadioButton x:Name="RbAllTime" GroupName="PeriodGroup" Checked="Rb_Checked">
+                    <RadioButton.Content>
+                        <StackPanel Margin="6,0,0,0">
+                            <TextBlock Text="Seluruh Riwayat (All-Time)" FontWeight="SemiBold" FontSize="13" Foreground="#111827"/>
+                            <TextBlock Text="Mengekspor seluruh transaksi sejak sistem pertama kali berjalan." FontSize="11" Foreground="#6B7280"/>
+                        </StackPanel>
+                    </RadioButton.Content>
+                </RadioButton>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer Actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Batal" Padding="16,9" Background="Transparent" Foreground="#4B5563" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand" Click="BtnCancel_Click"/>
+            <Button Content="📥 Export Excel (.xlsx)" Padding="18,9" Background="#059669" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExport_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

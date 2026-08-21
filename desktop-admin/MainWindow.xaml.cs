@@ -837,25 +837,54 @@ namespace DesktopAdmin
                     return;
                 }
 
+                // 1. Tampilkan Dialog Pilihan Periode
+                var periodDialog = new ExportPeriodWindow();
+                periodDialog.Owner = this;
+                periodDialog.ShowDialog();
+
+                if (!periodDialog.IsConfirmed)
+                {
+                    return; // User membatalkan
+                }
+
+                // 2. Filter data pinjaman berdasarkan tanggal pinjam
+                System.Collections.Generic.List<LoanDisplayModel> filteredLoans;
+                if (periodDialog.FilterType == "All" || !periodDialog.StartDate.HasValue || !periodDialog.EndDate.HasValue)
+                {
+                    filteredLoans = new System.Collections.Generic.List<LoanDisplayModel>(Loans);
+                }
+                else
+                {
+                    filteredLoans = Loans.Where(l => l.BorrowDate >= periodDialog.StartDate.Value && l.BorrowDate <= periodDialog.EndDate.Value).ToList();
+                }
+
+                if (filteredLoans.Count == 0)
+                {
+                    MessageBox.Show($"Tidak ditemukan riwayat peminjaman untuk periode: {periodDialog.PeriodLabel}.\nSilakan pilih periode lain.", "Data Tidak Ditemukan", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                // 3. Dialog Simpan File Excel
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
                     Title = "Export Laporan Sirkulasi Peminjaman Aset (Excel)",
                     Filter = "File Microsoft Excel (*.xlsx)|*.xlsx|Semua File (*.*)|*.*",
-                    FileName = $"Laporan_Sirkulasi_Peminjaman_Desa_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx"
+                    FileName = $"Laporan_Peminjaman_Desa_{periodDialog.SafeFileSuffix}.xlsx"
                 };
 
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     using (var workbook = new XLWorkbook())
                     {
-                        var ws = workbook.Worksheets.Add("Riwayat Peminjaman");
+                        var ws = workbook.Worksheets.Add("Laporan Peminjaman");
                         ws.ShowGridLines = true;
 
-                        // KOP
+                        // 1. KOP SURAT RESMI DESA
                         ws.Range("A1:G1").Merge();
                         ws.Cell("A1").Value = "PEMERINTAH DESA PUCANG";
                         ws.Cell("A1").Style.Font.Bold = true;
                         ws.Cell("A1").Style.Font.FontSize = 14;
+                        ws.Cell("A1").Style.Font.FontColor = XLColor.FromHtml("#1E293B");
                         ws.Cell("A1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                         ws.Range("A2:G2").Merge();
@@ -866,15 +895,74 @@ namespace DesktopAdmin
                         ws.Cell("A2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                         ws.Range("A3:G3").Merge();
-                        ws.Cell("A3").Value = $"Status Data: Cloud Supabase | Dicetak pada: {DateTime.Now.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("id-ID"))} WIB";
+                        ws.Cell("A3").Value = $"PERIODE: {periodDialog.PeriodLabel.ToUpper()} | Status Data: Cloud Supabase | Tgl Cetak: {DateTime.Now.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("id-ID"))} WIB";
                         ws.Cell("A3").Style.Font.Italic = true;
                         ws.Cell("A3").Style.Font.FontSize = 10;
+                        ws.Cell("A3").Style.Font.FontColor = XLColor.FromHtml("#64748B");
                         ws.Cell("A3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                        // Headers
-                        int startRow = 5;
+                        // 2. KOTAK RINGKASAN REKAPITULASI
+                        int totalPeminjaman = filteredLoans.Count;
+                        int totalKembali = filteredLoans.Count(l => l.Status == "Selesai");
+                        int totalBelumKembali = filteredLoans.Count(l => l.Status != "Selesai");
+
+                        ws.Range("A5:B5").Merge();
+                        ws.Cell("A5").Value = "TOTAL TRANSAKSI";
+                        ws.Cell("A5").Style.Font.Bold = true;
+                        ws.Cell("A5").Style.Font.FontSize = 9;
+                        ws.Cell("A5").Style.Fill.BackgroundColor = XLColor.FromHtml("#F1F5F9");
+                        ws.Cell("A5").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                        ws.Range("A6:B6").Merge();
+                        ws.Cell("A6").Value = $"{totalPeminjaman} Transaksi";
+                        ws.Cell("A6").Style.Font.Bold = true;
+                        ws.Cell("A6").Style.Font.FontSize = 12;
+                        ws.Cell("A6").Style.Font.FontColor = XLColor.FromHtml("#0F172A");
+                        ws.Cell("A6").Style.Fill.BackgroundColor = XLColor.FromHtml("#F1F5F9");
+                        ws.Cell("A6").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range("A5:B6").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Range("A5:B6").Style.Border.OutsideBorderColor = XLColor.FromHtml("#CBD5E1");
+
+                        ws.Range("C5:D5").Merge();
+                        ws.Cell("C5").Value = "SUDAH DIKEMBALIKAN";
+                        ws.Cell("C5").Style.Font.Bold = true;
+                        ws.Cell("C5").Style.Font.FontSize = 9;
+                        ws.Cell("C5").Style.Font.FontColor = XLColor.FromHtml("#065F46");
+                        ws.Cell("C5").Style.Fill.BackgroundColor = XLColor.FromHtml("#ECFDF5");
+                        ws.Cell("C5").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                        ws.Range("C6:D6").Merge();
+                        ws.Cell("C6").Value = $"{totalKembali} Selesai";
+                        ws.Cell("C6").Style.Font.Bold = true;
+                        ws.Cell("C6").Style.Font.FontSize = 12;
+                        ws.Cell("C6").Style.Font.FontColor = XLColor.FromHtml("#047857");
+                        ws.Cell("C6").Style.Fill.BackgroundColor = XLColor.FromHtml("#ECFDF5");
+                        ws.Cell("C6").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range("C5:D6").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Range("C5:D6").Style.Border.OutsideBorderColor = XLColor.FromHtml("#A7F3D0");
+
+                        ws.Range("E5:G5").Merge();
+                        ws.Cell("E5").Value = "MASIH DIPINJAM / BERJALAN";
+                        ws.Cell("E5").Style.Font.Bold = true;
+                        ws.Cell("E5").Style.Font.FontSize = 9;
+                        ws.Cell("E5").Style.Font.FontColor = XLColor.FromHtml("#9A3412");
+                        ws.Cell("E5").Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF7ED");
+                        ws.Cell("E5").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                        ws.Range("E6:G6").Merge();
+                        ws.Cell("E6").Value = $"{totalBelumKembali} Barang Belum Kembali";
+                        ws.Cell("E6").Style.Font.Bold = true;
+                        ws.Cell("E6").Style.Font.FontSize = 12;
+                        ws.Cell("E6").Style.Font.FontColor = XLColor.FromHtml("#C2410C");
+                        ws.Cell("E6").Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF7ED");
+                        ws.Cell("E6").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Range("E5:G6").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        ws.Range("E5:G6").Style.Border.OutsideBorderColor = XLColor.FromHtml("#FED7AA");
+
+                        // 3. TABLE HEADERS (BARIS 8)
+                        int startRow = 8;
                         string[] headers = new string[] {
-                            "NO", "NAMA LENGKAP PEMINJAM", "NIK PEMINJAM", "ID / SKU ASET",
+                            "NO", "NAMA LENGKAP PEMINJAM", "NIK PEMINJAM", "KODE SKU / ASET",
                             "TANGGAL PINJAM", "BATAS KEMBALI", "STATUS TRANSAKSI"
                         };
 
@@ -889,12 +977,14 @@ namespace DesktopAdmin
                             cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                             cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                             cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                            cell.Style.Border.OutsideBorderColor = XLColor.FromHtml("#172554");
                         }
                         ws.Row(startRow).Height = 26;
 
+                        // 4. DATA ROWS
                         int currentRow = startRow + 1;
                         int no = 1;
-                        foreach (var loan in Loans)
+                        foreach (var loan in filteredLoans)
                         {
                             var rowBg = (no % 2 == 0) ? XLColor.FromHtml("#F8FAFC") : XLColor.White;
                             ws.Row(currentRow).Height = 20;
@@ -943,21 +1033,27 @@ namespace DesktopAdmin
                             currentRow++;
                         }
 
-                        // Total Footer
+                        // 5. TOTAL FOOTER
                         ws.Range(currentRow, 1, currentRow, 6).Merge();
-                        ws.Cell(currentRow, 1).Value = "TOTAL TRANSAKSI PEMINJAMAN";
+                        ws.Cell(currentRow, 1).Value = $"TOTAL TRANSAKSI PERIODE ({periodDialog.PeriodLabel.ToUpper()})";
                         ws.Cell(currentRow, 1).Style.Font.Bold = true;
                         ws.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                        ws.Cell(currentRow, 1).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
-                        ws.Cell(currentRow, 7).Value = $"{Loans.Count} Transaksi";
+                        ws.Cell(currentRow, 7).Value = $"{filteredLoans.Count} Transaksi";
                         ws.Cell(currentRow, 7).Style.Font.Bold = true;
                         ws.Cell(currentRow, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        ws.Cell(currentRow, 7).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
 
-                        ws.Range(currentRow, 1, currentRow, 7).Style.Fill.BackgroundColor = XLColor.FromHtml("#F1F5F9");
-                        ws.Range(currentRow, 1, currentRow, 7).Style.Border.TopBorder = XLBorderStyleValues.Thin;
-                        ws.Range(currentRow, 1, currentRow, 7).Style.Border.BottomBorder = XLBorderStyleValues.Double;
+                        var totalRange = ws.Range(currentRow, 1, currentRow, 7);
+                        totalRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#F1F5F9");
+                        totalRange.Style.Border.TopBorder = XLBorderStyleValues.Thin;
+                        totalRange.Style.Border.TopBorderColor = XLColor.FromHtml("#94A3B8");
+                        totalRange.Style.Border.BottomBorder = XLBorderStyleValues.Double;
+                        totalRange.Style.Border.BottomBorderColor = XLColor.FromHtml("#475569");
+                        ws.Row(currentRow).Height = 24;
 
-                        // Signatures
+                        // 6. LEMBAR PENGESAHAN (SIGNATURE BLOCK)
                         int sigRow = currentRow + 3;
                         ws.Cell(sigRow, 2).Value = "Mengetahui,";
                         ws.Cell(sigRow + 1, 2).Value = "Kepala Desa Pucang";
@@ -965,7 +1061,7 @@ namespace DesktopAdmin
                         ws.Range(sigRow, 2, sigRow + 5, 3).Style.Font.Bold = true;
 
                         ws.Cell(sigRow, 5).Value = $"Pucang, {DateTime.Now.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"))}";
-                        ws.Cell(sigRow + 1, 5).Value = "Petugas Inventaris Desa";
+                        ws.Cell(sigRow + 1, 5).Value = "Pengurus / Petugas Inventaris Desa";
                         ws.Cell(sigRow + 5, 5).Value = "( ................................................ )";
                         ws.Range(sigRow, 5, sigRow + 5, 7).Style.Font.Bold = true;
 
@@ -976,12 +1072,12 @@ namespace DesktopAdmin
                         ws.Column(4).Width = 18;
                         ws.Column(5).Width = 18;
                         ws.Column(6).Width = 18;
-                        ws.Column(7).Width = 20;
+                        ws.Column(7).Width = 22;
 
                         workbook.SaveAs(saveFileDialog.FileName);
                     }
 
-                    var openFile = MessageBox.Show($"Laporan sirkulasi peminjaman berhasil diekspor ke Excel:\n{saveFileDialog.FileName}\n\nApakah Anda ingin langsung membuka file tersebut?", "Laporan Excel Berhasil", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    var openFile = MessageBox.Show($"Laporan sirkulasi peminjaman ({periodDialog.PeriodLabel}) berhasil diekspor ke Excel:\n{saveFileDialog.FileName}\n\nApakah Anda ingin langsung membuka file tersebut?", "Laporan Excel Berhasil", MessageBoxButton.YesNo, MessageBoxImage.Information);
                     if (openFile == MessageBoxResult.Yes)
                     {
                         Process.Start(new ProcessStartInfo(saveFileDialog.FileName) { UseShellExecute = true });
