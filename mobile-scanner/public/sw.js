@@ -1,18 +1,7 @@
 // Service Worker for Inventaris Aset Desa PWA
-const CACHE_NAME = 'aset-desa-pwa-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.svg'
-];
+const CACHE_NAME = 'aset-desa-pwa-v2';
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
@@ -28,29 +17,28 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Hanya cache GET requests yang bukan panggilan API Supabase
+  // Hanya proses GET requests non-Supabase
   if (event.request.method !== 'GET' || event.request.url.includes('supabase.co')) {
     return;
   }
 
+  // Network First for HTML and fresh data
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+        return networkResponse;
+      })
+      .catch(() => {
+        // Fallback ke cache jika offline
+        return caches.match(event.request).then((cached) => {
+          return cached || caches.match('/index.html');
         });
-        return response;
-      }).catch(() => {
-        // Fallback jika offline
-        return caches.match('/index.html');
-      });
-    })
+      })
   );
 });
