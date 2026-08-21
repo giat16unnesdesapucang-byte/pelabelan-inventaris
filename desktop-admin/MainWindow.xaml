@@ -242,6 +242,7 @@
                         <Button x:Name="BtnDeleteAsset" Content="Hapus" Margin="10,0,0,0" Background="#EF4444" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" Click="BtnDeleteAsset_Click"/>
                         <Button x:Name="BtnViewHistory" Content="Lihat Riwayat" Margin="10,0,0,0" Background="#6B7280" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" Click="BtnViewHistory_Click"/>
                         <Button Content="Cetak Batch QR" Margin="10,0,0,0" Background="#3B82F6" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" Click="BtnPrintBatch_Click"/>
+                        <Button x:Name="BtnExportAssets" Content="📊 Export Excel / CSV" Margin="10,0,0,0" Background="#059669" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExportAssets_Click"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -316,14 +317,20 @@
             <Grid x:Name="PageLoans" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 
                 <!-- Header -->
-                <TextBlock Grid.Row="0" Text="Data Sirkulasi Peminjaman" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,20"/>
+                <TextBlock Grid.Row="0" Text="Data Sirkulasi Peminjaman" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,15"/>
+
+                <!-- Toolbar -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+                    <Button Content="📊 Export Laporan Peminjaman (CSV)" Background="#059669" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExportLoans_Click"/>
+                </StackPanel>
                 
                 <!-- DataGrid -->
-                <DataGrid x:Name="LoansGrid" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False"
+                <DataGrid x:Name="LoansGrid" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False"
                           Background="White" BorderBrush="#E5E7EB" BorderThickness="1"
                           RowBackground="White" AlternatingRowBackground="#F9FAFB"
                           HeadersVisibility="Column" GridLinesVisibility="Horizontal">

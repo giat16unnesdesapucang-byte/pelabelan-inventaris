@@ -12,6 +12,8 @@ using Postgrest.Attributes;
 using Postgrest.Models;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text;
+using System.Diagnostics;
 
 namespace DesktopAdmin
 {
@@ -497,6 +499,127 @@ namespace DesktopAdmin
             {
                 MessageBox.Show("Silakan pilih kategori yang ingin dihapus terlebih dahulu.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void BtnExportAssets_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (Assets.Count == 0)
+                {
+                    MessageBox.Show("Tidak ada data aset untuk diekspor.", "Informasi", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Title = "Export Laporan Inventaris Aset Desa",
+                    Filter = "File CSV Excel (*.csv)|*.csv|Semua File (*.*)|*.*",
+                    FileName = $"Laporan_Inventaris_Aset_Desa_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    var sb = new StringBuilder();
+                    // Header CSV
+                    sb.AppendLine("No,Kode SKU,Nama Aset,Kategori,Lokasi,Sumber Dana,Tanggal Perolehan,Nilai Aset (Rp),Status Ketersediaan,Kondisi Fisik,Keterangan");
+
+                    int no = 1;
+                    foreach (var asset in Assets)
+                    {
+                        var categoryName = Categories.FirstOrDefault(c => c.Id == asset.CategoryId)?.Name ?? "-";
+                        var tglBeli = asset.PurchaseDate.HasValue ? asset.PurchaseDate.Value.ToString("yyyy-MM-dd") : "-";
+                        var harga = asset.Price.HasValue ? asset.Price.Value.ToString("0") : "0";
+
+                        sb.AppendLine(string.Join(",",
+                            no++,
+                            EscapeCsv(asset.AssetCode),
+                            EscapeCsv(asset.Name),
+                            EscapeCsv(categoryName),
+                            EscapeCsv(asset.Location),
+                            EscapeCsv(asset.FundingSource ?? "-"),
+                            EscapeCsv(tglBeli),
+                            harga,
+                            EscapeCsv(asset.AvailabilityStatus),
+                            EscapeCsv(asset.Condition),
+                            EscapeCsv(asset.Description ?? "-")
+                        ));
+                    }
+
+                    // Tulis file dengan UTF-8 BOM agar rapi langsung di Excel
+                    File.WriteAllText(saveFileDialog.FileName, sb.ToString(), new UTF8Encoding(true));
+
+                    var openFile = MessageBox.Show($"Data {Assets.Count} aset berhasil diekspor ke:\n{saveFileDialog.FileName}\n\nApakah Anda ingin langsung membuka file tersebut?", "Export Berhasil", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    if (openFile == MessageBoxResult.Yes)
+                    {
+                        Process.Start(new ProcessStartInfo(saveFileDialog.FileName) { UseShellExecute = true });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal mengekspor data aset: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BtnExportLoans_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (Loans.Count == 0)
+                {
+                    MessageBox.Show("Tidak ada data sirkulasi peminjaman untuk diekspor.", "Informasi", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Title = "Export Laporan Sirkulasi Peminjaman Aset",
+                    Filter = "File CSV Excel (*.csv)|*.csv|Semua File (*.*)|*.*",
+                    FileName = $"Laporan_Sirkulasi_Peminjaman_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    var sb = new StringBuilder();
+                    // Header CSV
+                    sb.AppendLine("No,Nama Peminjam,NIK Peminjam,ID Aset,Tanggal Pinjam,Batas Kembali,Status");
+
+                    int no = 1;
+                    foreach (var loan in Loans)
+                    {
+                        sb.AppendLine(string.Join(",",
+                            no++,
+                            EscapeCsv(loan.BorrowerName),
+                            EscapeCsv(loan.BorrowerNik),
+                            EscapeCsv(loan.AssetCodeProxy),
+                            EscapeCsv(loan.BorrowDateString),
+                            EscapeCsv(loan.ExpectedReturnString),
+                            EscapeCsv(loan.Status)
+                        ));
+                    }
+
+                    // Tulis file dengan UTF-8 BOM
+                    File.WriteAllText(saveFileDialog.FileName, sb.ToString(), new UTF8Encoding(true));
+
+                    var openFile = MessageBox.Show($"Data {Loans.Count} riwayat peminjaman berhasil diekspor ke:\n{saveFileDialog.FileName}\n\nApakah Anda ingin langsung membuka file tersebut?", "Export Berhasil", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    if (openFile == MessageBoxResult.Yes)
+                    {
+                        Process.Start(new ProcessStartInfo(saveFileDialog.FileName) { UseShellExecute = true });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Gagal mengekspor data peminjaman: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static string EscapeCsv(string? value)
+        {
+            if (string.IsNullOrEmpty(value)) return "\"\"";
+            string escaped = value.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ");
+            return $"\"{escaped}\"";
         }
     }
 
