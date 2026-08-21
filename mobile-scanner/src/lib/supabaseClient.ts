@@ -10,11 +10,14 @@ export type Asset = {
   id: string;
   asset_code: string;
   name: string;
-  description: string;
+  description?: string | null;
   condition: 'Baik' | 'Rusak Ringan' | 'Rusak Berat';
   availability_status: 'Tersedia' | 'Dipinjam' | 'Perawatan';
   location: string;
   photo_url?: string | null;
+  purchase_date?: string | null;
+  price?: number | null;
+  funding_source?: string | null;
 };
 
 export type LoanTransaction = {

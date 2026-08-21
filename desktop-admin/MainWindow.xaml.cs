@@ -185,14 +185,14 @@ namespace DesktopAdmin
                         PhotoPreviewImage.Source = bitmap;
                         PhotoPreviewImage.Visibility = Visibility.Visible;
                         PhotoPreviewPlaceholder.Visibility = Visibility.Collapsed;
-                        PhotoPreviewText.Text = $"{selectedAsset.Name}";
+                        PhotoPreviewText.Text = $"{selectedAsset.Name}\nSumber: {selectedAsset.FundingSourceDisplay} | Nilai: {selectedAsset.PriceDisplay}\nTgl Perolehan: {selectedAsset.PurchaseDateDisplay}";
                     }
                     catch
                     {
                         PhotoPreviewImage.Source = null;
                         PhotoPreviewImage.Visibility = Visibility.Collapsed;
                         PhotoPreviewPlaceholder.Visibility = Visibility.Visible;
-                        PhotoPreviewText.Text = "Gagal memuat gambar dari URL.";
+                        PhotoPreviewText.Text = $"{selectedAsset.Name}\n(Gagal memuat gambar dari URL)\nSumber: {selectedAsset.FundingSourceDisplay} | Nilai: {selectedAsset.PriceDisplay}";
                     }
                 }
                 else
@@ -200,7 +200,7 @@ namespace DesktopAdmin
                     PhotoPreviewImage.Source = null;
                     PhotoPreviewImage.Visibility = Visibility.Collapsed;
                     PhotoPreviewPlaceholder.Visibility = Visibility.Visible;
-                    PhotoPreviewText.Text = "Aset ini belum memiliki foto fisik.";
+                    PhotoPreviewText.Text = $"{selectedAsset.Name}\n(Belum ada foto fisik)\nSumber: {selectedAsset.FundingSourceDisplay} | Nilai: {selectedAsset.PriceDisplay}";
                 }
             }
             else
@@ -210,7 +210,7 @@ namespace DesktopAdmin
                 PhotoPreviewImage.Source = null;
                 PhotoPreviewImage.Visibility = Visibility.Collapsed;
                 PhotoPreviewPlaceholder.Visibility = Visibility.Visible;
-                PhotoPreviewText.Text = "Pilih aset di tabel untuk melihat foto.";
+                PhotoPreviewText.Text = "Pilih aset di tabel untuk melihat foto & detail.";
             }
         }
 
@@ -526,6 +526,22 @@ namespace DesktopAdmin
 
         [Column("photo_url")]
         public string? PhotoUrl { get; set; }
+
+        [Column("description")]
+        public string? Description { get; set; }
+
+        [Column("purchase_date")]
+        public DateTime? PurchaseDate { get; set; }
+
+        [Column("price")]
+        public decimal? Price { get; set; }
+
+        [Column("funding_source")]
+        public string? FundingSource { get; set; }
+
+        public string PriceDisplay => Price.HasValue ? string.Format(new System.Globalization.CultureInfo("id-ID"), "Rp {0:N0}", Price.Value) : "-";
+        public string PurchaseDateDisplay => PurchaseDate.HasValue ? PurchaseDate.Value.ToString("dd MMM yyyy") : "-";
+        public string FundingSourceDisplay => !string.IsNullOrWhiteSpace(FundingSource) ? FundingSource : "-";
     }
 
     [Table("loan_transactions")]

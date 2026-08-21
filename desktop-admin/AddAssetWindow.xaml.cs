@@ -30,6 +30,10 @@ namespace DesktopAdmin
                 TxtAssetCode.Text = _editingAsset.AssetCode;
                 TxtName.Text = _editingAsset.Name;
                 TxtLocation.Text = _editingAsset.Location;
+                TxtDescription.Text = _editingAsset.Description ?? string.Empty;
+                CmbFundingSource.Text = _editingAsset.FundingSource ?? string.Empty;
+                DpPurchaseDate.SelectedDate = _editingAsset.PurchaseDate;
+                TxtPrice.Text = _editingAsset.Price.HasValue ? _editingAsset.Price.Value.ToString("0") : "0";
                 _existingPhotoUrl = _editingAsset.PhotoUrl;
                 
                 // Select condition
@@ -284,6 +288,21 @@ namespace DesktopAdmin
                     finalPhotoUrl = null;
                 }
 
+                // Parse price
+                decimal? price = null;
+                if (!string.IsNullOrWhiteSpace(TxtPrice.Text))
+                {
+                    string cleanPrice = TxtPrice.Text.Replace("Rp", "").Replace(".", "").Replace(",", "").Trim();
+                    if (decimal.TryParse(cleanPrice, out decimal p))
+                    {
+                        price = p;
+                    }
+                }
+
+                string fundingSource = CmbFundingSource.Text?.Trim();
+                DateTime? purchaseDate = DpPurchaseDate.SelectedDate;
+                string description = TxtDescription.Text?.Trim();
+
                 // 2. Insert or Update Asset in database
                 if (_editingAsset == null)
                 {
@@ -295,7 +314,11 @@ namespace DesktopAdmin
                         Condition = (CmbCondition.SelectedItem as ComboBoxItem)?.Content.ToString(),
                         AvailabilityStatus = "Tersedia",
                         CategoryId = CmbCategory.SelectedValue?.ToString(),
-                        PhotoUrl = finalPhotoUrl
+                        PhotoUrl = finalPhotoUrl,
+                        FundingSource = string.IsNullOrWhiteSpace(fundingSource) ? null : fundingSource,
+                        PurchaseDate = purchaseDate,
+                        Price = price,
+                        Description = string.IsNullOrWhiteSpace(description) ? null : description
                     };
                     await _supabaseClient.From<AssetModel>().Insert(newAsset);
                 }
@@ -307,6 +330,10 @@ namespace DesktopAdmin
                     _editingAsset.Condition = (CmbCondition.SelectedItem as ComboBoxItem)?.Content.ToString();
                     _editingAsset.CategoryId = CmbCategory.SelectedValue?.ToString();
                     _editingAsset.PhotoUrl = finalPhotoUrl;
+                    _editingAsset.FundingSource = string.IsNullOrWhiteSpace(fundingSource) ? null : fundingSource;
+                    _editingAsset.PurchaseDate = purchaseDate;
+                    _editingAsset.Price = price;
+                    _editingAsset.Description = string.IsNullOrWhiteSpace(description) ? null : description;
                     
                     await _supabaseClient.From<AssetModel>().Where(a => a.Id == _editingAsset.Id).Update(_editingAsset);
                 }

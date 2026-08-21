@@ -371,7 +371,7 @@ const AssetDetails = () => {
             )}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
             <div>
               <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Lokasi</p>
               <p style={{ fontWeight: 500 }}>{asset.location}</p>
@@ -393,6 +393,35 @@ const AssetDetails = () => {
               </select>
             </div>
           </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', paddingTop: '12px', borderTop: '1px solid var(--surface-border)' }}>
+            <div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Sumber Dana</p>
+              <p style={{ fontWeight: 500, fontSize: '13px' }}>{asset.funding_source || '-'}</p>
+            </div>
+            <div>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Nilai Aset</p>
+              <p style={{ fontWeight: 600, fontSize: '13px', color: 'var(--accent-hover)' }}>
+                {asset.price ? `Rp ${asset.price.toLocaleString('id-ID')}` : '-'}
+              </p>
+            </div>
+          </div>
+
+          {asset.purchase_date && (
+            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--surface-border)' }}>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>Tanggal Perolehan</p>
+              <p style={{ fontWeight: 500, fontSize: '13px' }}>
+                {new Date(asset.purchase_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+          )}
+
+          {asset.description && (
+            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--surface-border)' }}>
+              <p style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>Keterangan / Spesifikasi</p>
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{asset.description}</p>
+            </div>
+          )}
         </div>
 
         {/* Riwayat Peminjaman Terakhir */}

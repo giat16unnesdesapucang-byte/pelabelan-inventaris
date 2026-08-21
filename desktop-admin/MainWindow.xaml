@@ -258,9 +258,11 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="SKU / ID Aset" Binding="{Binding AssetCode}" Width="120"/>
                         <DataGridTextColumn Header="Nama Aset" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Lokasi" Binding="{Binding Location}" Width="150"/>
-                        <DataGridTextColumn Header="Status" Binding="{Binding AvailabilityStatus}" Width="100"/>
-                        <DataGridTextColumn Header="Kondisi" Binding="{Binding Condition}" Width="100"/>
+                        <DataGridTextColumn Header="Lokasi" Binding="{Binding Location}" Width="130"/>
+                        <DataGridTextColumn Header="Sumber Dana" Binding="{Binding FundingSourceDisplay}" Width="130"/>
+                        <DataGridTextColumn Header="Nilai Aset" Binding="{Binding PriceDisplay}" Width="120"/>
+                        <DataGridTextColumn Header="Status" Binding="{Binding AvailabilityStatus}" Width="90"/>
+                        <DataGridTextColumn Header="Kondisi" Binding="{Binding Condition}" Width="90"/>
                     </DataGrid.Columns>
                 </DataGrid>
 
