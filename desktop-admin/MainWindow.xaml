@@ -242,7 +242,7 @@
                         <Button x:Name="BtnDeleteAsset" Content="Hapus" Margin="10,0,0,0" Background="#EF4444" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" Click="BtnDeleteAsset_Click"/>
                         <Button x:Name="BtnViewHistory" Content="Lihat Riwayat" Margin="10,0,0,0" Background="#6B7280" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" Click="BtnViewHistory_Click"/>
                         <Button Content="Cetak Batch QR" Margin="10,0,0,0" Background="#3B82F6" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" Click="BtnPrintBatch_Click"/>
-                        <Button x:Name="BtnExportAssets" Content="📊 Export Excel / CSV" Margin="10,0,0,0" Background="#059669" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExportAssets_Click"/>
+                        <Button x:Name="BtnExportAssets" Content="📊 Export Laporan Excel (.xlsx)" Margin="10,0,0,0" Background="#059669" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExportAssets_Click"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
@@ -326,7 +326,7 @@
 
                 <!-- Toolbar -->
                 <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
-                    <Button Content="📊 Export Laporan Peminjaman (CSV)" Background="#059669" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExportLoans_Click"/>
+                    <Button Content="📊 Export Laporan Peminjaman (.xlsx)" Background="#059669" Foreground="White" Padding="12,8" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnExportLoans_Click"/>
                 </StackPanel>
                 
                 <!-- DataGrid -->
