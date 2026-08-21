@@ -28,14 +28,8 @@
                     <TextBlock Text="Nama Aset *" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
                     <TextBox x:Name="TxtName" Padding="8" Margin="0,0,0,12" BorderBrush="#D1D5DB" FontSize="13"/>
 
-                    <TextBlock Text="Kode SKU / ID Aset *" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtAssetCode" Padding="8" Margin="0,0,0,12" BorderBrush="#D1D5DB" Text="INV-2026-" FontSize="13"/>
-
                     <TextBlock Text="Kategori Aset" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CmbCategory" Padding="7" Margin="0,0,0,12" DisplayMemberPath="Name" SelectedValuePath="Id" FontSize="13"/>
-
-                    <TextBlock Text="Lokasi Penyimpanan" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtLocation" Padding="8" Margin="0,0,0,12" BorderBrush="#D1D5DB" FontSize="13"/>
+                    <ComboBox x:Name="CmbCategory" Padding="7" Margin="0,0,0,12" DisplayMemberPath="Name" SelectedValuePath="Id" FontSize="13" SelectionChanged="CmbCategory_SelectionChanged"/>
 
                     <!-- Grid: Sumber Dana & Tanggal Beli -->
                     <Grid Margin="0,0,0,12">
@@ -58,9 +52,25 @@
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Tgl Perolehan" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
-                            <DatePicker x:Name="DpPurchaseDate" Padding="4" FontSize="12"/>
+                            <DatePicker x:Name="DpPurchaseDate" Padding="4" FontSize="12" SelectedDateChanged="DpPurchaseDate_SelectedDateChanged"/>
                         </StackPanel>
                     </Grid>
+
+                    <!-- Kode SKU dengan Auto-Generate Button -->
+                    <TextBlock Text="Kode SKU / ID Aset *" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="TxtAssetCode" Grid.Column="0" Padding="8" BorderBrush="#D1D5DB" FontSize="13" FontWeight="SemiBold"/>
+                        <Button x:Name="BtnAutoGenerateCode" Grid.Column="2" Content="⚡ Buat Kode Otomatis" Background="#059669" Foreground="White" Padding="12,6" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Click="BtnAutoGenerateCode_Click"/>
+                    </Grid>
+                    <TextBlock Text="💡 Format standar: PCG-[Kategori]-[Tahun]-[NoUrut]. Tetap dapat diubah manual." FontSize="11" Foreground="#6B7280" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Lokasi Penyimpanan" FontWeight="SemiBold" Foreground="#374151" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtLocation" Padding="8" Margin="0,0,0,12" BorderBrush="#D1D5DB" FontSize="13"/>
 
                     <!-- Grid: Nilai Barang & Kondisi -->
                     <Grid Margin="0,0,0,12">

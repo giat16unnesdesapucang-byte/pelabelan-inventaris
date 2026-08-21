@@ -52,6 +52,10 @@ namespace DesktopAdmin
                     LoadPhotoPreviewFromUrl(_existingPhotoUrl);
                 }
             }
+            else
+            {
+                DpPurchaseDate.SelectedDate = DateTime.Now;
+            }
 
             _ = LoadCategoriesAsync();
         }
@@ -156,9 +160,95 @@ namespace DesktopAdmin
                     {
                         CmbCategory.SelectedValue = _editingAsset.CategoryId;
                     }
+                    else if (_editingAsset == null && CmbCategory.Items.Count > 0 && CmbCategory.SelectedIndex == -1)
+                    {
+                        CmbCategory.SelectedIndex = 0;
+                    }
                 });
             }
             catch { }
+        }
+
+        private string GetCategoryAbbreviation(string categoryName)
+        {
+            if (string.IsNullOrWhiteSpace(categoryName)) return "UMM";
+            
+            string lower = categoryName.ToLower();
+            if (lower.Contains("elektronik") || lower.Contains("komputer") || lower.Contains("laptop") || lower.Contains("it") || lower.Contains("printer"))
+                return "ELK";
+            if (lower.Contains("mebel") || lower.Contains("kursi") || lower.Contains("meja") || lower.Contains("lemari") || lower.Contains("perabot") || lower.Contains("furnitur"))
+                return "MBL";
+            if (lower.Contains("kendaraan") || lower.Contains("motor") || lower.Contains("mobil") || lower.Contains("sepeda"))
+                return "KDR";
+            if (lower.Contains("peralatan") || lower.Contains("mesin") || lower.Contains("genset") || lower.Contains("tenda") || lower.Contains("sound"))
+                return "ALAT";
+            if (lower.Contains("bangunan") || lower.Contains("gedung") || lower.Contains("tanah") || lower.Contains("ruang"))
+                return "GDG";
+            
+            var clean = System.Text.RegularExpressions.Regex.Replace(categoryName, "[^a-zA-Z]", "");
+            return clean.Length >= 3 ? clean.Substring(0, 3).ToUpper() : "UMM";
+        }
+
+        private async Task GenerateAutoSkuCodeAsync(bool force = false)
+        {
+            if (_editingAsset != null && !force) return;
+
+            try
+            {
+                var selectedCategory = CmbCategory.SelectedItem as CategoryModel;
+                string catAbbr = selectedCategory != null ? GetCategoryAbbreviation(selectedCategory.Name) : "UMM";
+                int year = DpPurchaseDate.SelectedDate?.Year ?? DateTime.Now.Year;
+                string prefix = $"PCG-{catAbbr}-{year}-";
+
+                var response = await _supabaseClient.From<AssetModel>().Get();
+                int maxSeq = 0;
+                if (response.Models != null)
+                {
+                    foreach (var a in response.Models)
+                    {
+                        if (string.IsNullOrWhiteSpace(a.AssetCode)) continue;
+                        if (a.AssetCode.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                        {
+                            string suffix = a.AssetCode.Substring(prefix.Length);
+                            if (int.TryParse(suffix, out int num) && num > maxSeq)
+                            {
+                                maxSeq = num;
+                            }
+                        }
+                    }
+                }
+
+                int nextSeq = maxSeq + 1;
+                Dispatcher.Invoke(() =>
+                {
+                    TxtAssetCode.Text = $"{prefix}{nextSeq:D3}";
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Auto-generate SKU error: " + ex.Message);
+            }
+        }
+
+        private void BtnAutoGenerateCode_Click(object sender, RoutedEventArgs e)
+        {
+            _ = GenerateAutoSkuCodeAsync(force: true);
+        }
+
+        private void CmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_editingAsset == null && (string.IsNullOrWhiteSpace(TxtAssetCode.Text) || TxtAssetCode.Text.StartsWith("PCG-") || TxtAssetCode.Text.StartsWith("INV-")))
+            {
+                _ = GenerateAutoSkuCodeAsync(force: false);
+            }
+        }
+
+        private void DpPurchaseDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_editingAsset == null && (string.IsNullOrWhiteSpace(TxtAssetCode.Text) || TxtAssetCode.Text.StartsWith("PCG-") || TxtAssetCode.Text.StartsWith("INV-")))
+            {
+                _ = GenerateAutoSkuCodeAsync(force: false);
+            }
         }
 
         private byte[] CompressAndResizeImage(string filePath, int maxDimension = 1000, long quality = 75L)
