@@ -1137,8 +1137,16 @@ namespace DesktopAdmin
         [Column("funding_source")]
         public string? FundingSource { get; set; }
 
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string PriceDisplay => Price.HasValue ? string.Format(new System.Globalization.CultureInfo("id-ID"), "Rp {0:N0}", Price.Value) : "-";
+
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string PurchaseDateDisplay => PurchaseDate.HasValue ? PurchaseDate.Value.ToString("dd MMM yyyy") : "-";
+
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public string FundingSourceDisplay => !string.IsNullOrWhiteSpace(FundingSource) ? FundingSource : "-";
     }
 
