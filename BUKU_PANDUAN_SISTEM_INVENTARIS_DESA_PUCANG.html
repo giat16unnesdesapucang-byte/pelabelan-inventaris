@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Buku Panduan Inventarisasi Aset Desa Pucang - KKN GIAT 16 UNNES</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    @page {
+      size: A4;
+      margin: 20mm 15mm 20mm 15mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: #1E293B;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background: #FFFFFF;
+      font-size: 11pt;
+    }
+
+    /* COVER PAGE */
+    .cover-page {
+      page-break-after: always;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      padding: 40px 20px;
+      border: 3px double #0F766E;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #F0FDFA 0%, #FFFFFF 60%, #F8FAFC 100%);
+    }
+
+    .cover-header {
+      margin-top: 20px;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: #0F766E;
+      color: white;
+      padding: 6px 18px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 10pt;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .cover-title {
+      font-size: 24pt;
+      font-weight: 800;
+      color: #0F172A;
+      margin: 10px 0;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      font-weight: 600;
+      color: #0F766E;
+      margin-bottom: 30px;
+    }
+
+    .cover-illustration {
+      margin: 20px auto;
+      width: 140px;
+      height: 140px;
+      background: white;
+      border: 2px solid #CCFBF1;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      box-shadow: 0 10px 25px rgba(15, 118, 110, 0.15);
+    }
+
+    .cover-footer {
+      border-top: 2px solid #E2E8F0;
+      padding-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .cover-instansi {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 4px;
+    }
+
+    .cover-kkn {
+      font-size: 10.5pt;
+      color: #64748B;
+      font-weight: 500;
+    }
+
+    /* CHAPTER STYLING */
+    .chapter-header {
+      background: #0F766E;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14pt;
+      font-weight: 800;
+      margin-top: 24px;
+      margin-bottom: 16px;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      font-size: 12.5pt;
+      font-weight: 700;
+      color: #0F766E;
+      border-bottom: 1.5px solid #E2E8F0;
+      padding-bottom: 4px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #1E293B;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+
+    p, li {
+      text-align: justify;
+      margin-bottom: 8px;
+    }
+
+    ul, ol {
+      padding-left: 22px;
+      margin-top: 4px;
+    }
+
+    /* CALLOUT BOXES */
+    .callout {
+      background: #F0FDFA;
+      border-left: 4px solid #0F766E;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 10pt;
+    }
+
+    .callout-title {
+      font-weight: 700;
+      color: #0F766E;
+      margin-bottom: 4px;
+    }
+
+    .callout-warning {
+      background: #FEF2F2;
+      border-left: 4px solid #EF4444;
+      color: #991B1B;
+    }
+
+    .callout-warning .callout-title {
+      color: #B91C1C;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 10pt;
+    }
+
+    th, td {
+      border: 1px solid #CBD5E1;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: #0F766E;
+      color: white;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+
+    /* STEP CARDS */
+    .step-box {
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: white;
+      page-break-inside: avoid;
+    }
+
+    .step-number {
+      display: inline-block;
+      background: #0F766E;
+      color: white;
+      width: 22px;
+      height: 22px;
+      text-align: center;
+      line-height: 22px;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 9pt;
+      margin-right: 8px;
+    }
+
+    .code-badge {
+      background: #F1F5F9;
+      color: #0F766E;
+      border: 1px solid #CBD5E1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: 700;
+    }
+
+    /* SIGNATURE BLOCK */
+    .signature-section {
+      margin-top: 30px;
+      page-break-inside: avoid;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER PAGE -->
+  <div class="cover-page">
+    <div class="cover-header">
+      <div class="cover-badge">Buku Petunjuk Operasional Resmi</div>
+      <div class="cover-title">SISTEM INFORMASI INVENTARISASI &amp; PELABELAN ASET DESA</div>
+      <div class="cover-subtitle">Panduan Penggunaan Aplikasi Desktop Admin &amp; Mobile Scanner PWA Berbasis QR Code Cloud</div>
+    </div>
+
+    <div class="cover-illustration">
+      🏛️📦
+    </div>
+
+    <div class="cover-footer">
+      <div class="cover-instansi">PEMERINTAH DESA PUCANG</div>
+      <div class="cover-kkn">Kecamatan Secang, Kabupaten Magelang, Jawa Tengah</div>
+      <div style="margin-top: 10px; font-weight: 700; color: #0F766E;">
+        Program Pengabdian Masyarakat Mahasiswa KKN GIAT 16<br>
+        Universitas Negeri Semarang (UNNES) &copy; 2026
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div>
+    <div class="chapter-header">BAB I: PENGENALAN SISTEM</div>
+    
+    <p>
+      Sistem Informasi Inventarisasi Aset Desa Pucang adalah platform digital yang dirancang khusus untuk menatausahakan, melacak, dan mengamankan seluruh <b>Barang Milik Desa (BMD)</b> secara transparan, terpadu, dan akuntabel.
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">🌟 Tiga Pilar Utama Sistem:</div>
+      <ol style="margin: 4px 0 0 0; padding-left: 18px;">
+        <li><b>Desktop Admin Panel (Windows App):</b> Pusat kendali pengurus barang balai desa untuk pendataan master aset, cetak stiker QR massal, serta penerbitan laporan resmi Microsoft Excel (.xlsx) standar KIB.</li>
+        <li><b>Mobile Scanner PWA (Smartphone):</b> Aplikasi pemindai kamera lapangan untuk petugas desa guna melayani transaksi pinjam/kembali barang warga secara instan.</li>
+        <li><b>Cloud Real-Time Database (Supabase):</b> Database cloud terenkripsi yang menyinkronkan data antar laptop dan HP secara otomatis seketika.</li>
+      </ol>
+    </div>
+
+    <div class="chapter-header">BAB II: PANDUAN APLIKASI DESKTOP ADMIN</div>
+
+    <h2>2.1 Menjalankan Aplikasi Desktop</h2>
+    <div class="step-box">
+      <span class="step-number">1</span> Buka File Explorer laptop kantor desa, masuk ke folder: <span class="code-badge">desktop-admin/bin/Release/net9.0-windows/win-x64/publish/</span>.<br>
+      <span class="step-number">2</span> Klik 2x pada file <b>DesktopAdmin.exe</b>. Aplikasi akan terbuka dan otomatis terhubung ke cloud.
+    </div>
+
+    <h2>2.2 Menambah Data Aset (Fitur Smart Auto-SKU)</h2>
+    <p>Sistem dilengkapi generator kode otomatis yang menyusun kode aset sesuai standar:</p>
+    <div style="text-align:center; padding: 8px; background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 8px; font-weight: bold; color: #065F46; margin-bottom: 12px;">
+      Format Baku: PCG - [KODE_KATEGORI] - [TAHUN] - [NO_URUT] (Contoh: PCG-ELK-2026-001)
+    </div>
+
+    <ol>
+      <li>Masuk ke menu <b>Data Aset</b> di bilah kiri $\rightarrow$ Klik tombol hijau <b>"+ Tambah Aset"</b>.</li>
+      <li>Ketik <b>Nama Aset</b> (contoh: <i>Laptop Lenovo ThinkPad Sekdes</i>).</li>
+      <li>Pilih <b>Kategori Aset</b> (Elektronik, Mebel, Kendaraan, Peralatan, Bangunan).</li>
+      <li>Pilih <b>Sumber Dana</b> (Dana Desa/DDS, ADD, PADes, Bankeu Prov/Kab, Hibah).</li>
+      <li>Tentukan <b>Tanggal Perolehan</b> (Tahun pembelian).</li>
+      <li>Klik tombol <b>"⚡ Buat Kode Otomatis"</b> untuk mengisi kode SKU secara otomatis anti-kembar.</li>
+      <li>Isi <b>Lokasi Simpan</b> dan <b>Nilai Aset (Harga Perolehan Rp)</b>.</li>
+      <li><i>(Opsional)</i> Klik <b>"Pilih Foto"</b> untuk melampirkan foto fisik asli barang.</li>
+      <li>Klik tombol hijau <b>"Simpan Aset"</b>.</li>
+    </ol>
+
+    <h2>2.3 Mencetak Stiker Label QR Code</h2>
+    <div class="step-box">
+      <span class="step-number">1</span> Pada tabel <b>Data Aset</b>, pilih barang yang ingin dicetak (bisa pilih satu atau blok banyak barang dengan tombol Ctrl).<br>
+      <span class="step-number">2</span> Klik tombol biru <b>"Cetak Batch QR"</b>.<br>
+      <span class="step-number">3</span> Jendela pratinjau cetak akan muncul menampilkan stiker QR berlogo resmi Desa Pucang.<br>
+      <span class="step-number">4</span> Klik <b>"🖨️ Cetak ke Printer"</b> untuk mencetak ke kertas stiker label.
+    </div>
+
+    <h2>2.4 Ekspor Laporan Resmi Microsoft Excel (.xlsx)</h2>
+    <ul>
+      <li><b>Buku Inventarisasi Aset (KIB):</b> Di halaman Data Aset, klik <b>"📊 Export Laporan Excel (.xlsx)"</b>. Dokumen memuat KOP Resmi Desa, Kartu Ringkasan KPI Eksekutif, Akuntansi Rupiah, Formula SUM, dan Kolom Pengesahan Tanda Tangan Kepala Desa.</li>
+      <li><b>Laporan Peminjaman Bulanan / SPJ:</b> Di halaman Sirkulasi Peminjaman, klik <b>"📊 Export Laporan Peminjaman (.xlsx)"</b> $\rightarrow$ pilih periode <b>Bulan Ini (Default)</b> atau <b>Rentang Tanggal Kustom</b> $\rightarrow$ Laporan resmi periode terpilih siap diunduh.</li>
+    </ul>
+
+    <h2>2.5 Mengatur PIN Petugas Mobile</h2>
+    <p>Klik menu <b>"⚙️ PIN Petugas Mobile"</b> di sidebar bawah $\rightarrow$ masukkan PIN Baru (4–8 angka) $\rightarrow$ klik <b>"Simpan PIN Baru"</b>.</p>
+
+    <div class="page-break"></div>
+
+    <div class="chapter-header">BAB III: PANDUAN APLIKASI MOBILE SCANNER (PWA)</div>
+
+    <h2>3.1 Aktivasi Perangkat &amp; Pasang Aplikasi ke Layar HP</h2>
+    <div class="step-box">
+      <span class="step-number">1</span> Buka browser di smartphone (Google Chrome / Safari) $\rightarrow$ buka link Vercel resmi desa.<br>
+      <span class="step-number">2</span> Pada layar <b>"Aktivasi Perangkat Petugas"</b>, masukkan PIN Keamanan (Default: <span class="code-badge">123456</span>).<br>
+      <span class="step-number">3</span> Begitu berhasil, muncul banner hijau <b>"📲 Pasang Aplikasi Aset Desa"</b> $\rightarrow$ Klik <b>"Pasang"</b>.<br>
+      <span class="step-number">4</span> Ikon aplikasi kini terpasang di layar utama HP dan <b>bebas PIN untuk penggunaan seterusnya!</b>
+    </div>
+
+    <h2>3.2 Memindai QR Code &amp; Alur Peminjaman Warga</h2>
+    <ol>
+      <li>Ketuk tombol pemindai bulat hijau <b>[ ⛶ ]</b> di menu bawah. Kamera belakang otomatis aktif.</li>
+      <li><i>(Opsional)</i> Jika HP memiliki banyak lensa, ketuk <b>"🔄 Ganti Lensa Kamera"</b> untuk berpindah kamera.</li>
+      <li>Arahkan ke stiker QR barang $\rightarrow$ Halaman detail barang langsung terbuka.</li>
+      <li>Ketuk tombol <b>"📦 Pinjamkan Aset Ini"</b> $\rightarrow$ Masukkan Nama Peminjam, NIK KTP, No. WhatsApp, dan Tanggal Batas Kembali $\rightarrow$ Klik <b>"Konfirmasi Peminjaman"</b>.</li>
+      <li>Saat warga mengembalikan barang, scan kembali QR barang tersebut $\rightarrow$ ketuk <b>"↩️ Proses Pengembalian"</b>. Status barang seketika kembali <i>Tersedia</i>!</li>
+    </ol>
+
+    <div class="chapter-header">BAB IV: TROUBLESHOOTING &amp; SOLUSI CEPAT</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30%;">Kendala</th>
+          <th style="width:30%;">Penyebab</th>
+          <th style="width:40%;">Solusi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Kamera HP tidak menyala saat scan</b></td>
+          <td>Izin akses kamera di browser belum diizinkan</td>
+          <td>Buka Pengaturan Browser HP $\rightarrow$ Izin Situs $\rightarrow$ Kamera $\rightarrow$ Pilih <i>"Izinkan"</i>.</td>
+        </tr>
+        <tr>
+          <td><b>Lupa PIN Petugas Lapangan</b></td>
+          <td>PIN pernah diubah</td>
+          <td>Buka Desktop Admin di laptop desa $\rightarrow$ menu <i>"⚙️ PIN Petugas Mobile"</i> untuk melihat/mereset PIN.</td>
+        </tr>
+        <tr>
+          <td><b>Aplikasi HP ingin dikunci ulang</b></td>
+          <td>Smartphone dipindahtangankan</td>
+          <td>Di Beranda HP, ketuk badge hijau <i>"🛡️ Terotorisasi"</i> di pojok kanan atas $\rightarrow$ pilih <i>"OK / Kunci"</i>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="signature-section">
+      <div class="chapter-header" style="text-align: center; background: #1E293B;">LEMBAR PENGESAHAN &amp; SERAH TERIMA</div>
+      <p style="text-align: center; margin-bottom: 25px;">
+        Dokumen panduan ini disahkan dan diserahterimakan kepada Pemerintah Desa Pucang pada <b>22 Agustus 2026</b>.
+      </p>
+
+      <table style="border:none; text-align:center; width:100%;">
+        <tr style="background:none;">
+          <td style="border:none; width:50%; text-align:center;">
+            Mengetahui,<br>
+            <b>Dosen Pembimbing Lapangan (DPL)</b><br><br><br><br><br>
+            <u>( ............................................................ )</u><br>
+            NIP.
+          </td>
+          <td style="border:none; width:50%; text-align:center;">
+            Menerima,<br>
+            <b>Kepala Desa Pucang</b><br><br><br><br><br>
+            <u>( ............................................................ )</u><br>
+            NIP.
+          </td>
+        </tr>
+        <tr style="background:none;">
+          <td colspan="2" style="border:none; text-align:center; padding-top: 30px;">
+            Disusun &amp; Diserahkan Oleh:<br>
+            <b>Koordinator Mahasiswa Desa (KORMADES) KKN GIAT 16 UNNES</b><br><br><br><br><br>
+            <u>( ............................................................ )</u><br>
+            NIM.
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
