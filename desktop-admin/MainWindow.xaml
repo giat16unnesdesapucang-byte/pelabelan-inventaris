@@ -1,7 +1,8 @@
 <Window x:Class="DesktopAdmin.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Inventaris Aset Desa - Admin Panel" Height="600" Width="900"
+        Title="Inventaris Aset Desa - Admin Panel" Height="650" Width="980"
+        Icon="app.ico"
         Background="#FAFAFA" FontFamily="Segoe UI">
     <Window.Resources>
         <!-- Styles -->
@@ -31,8 +32,13 @@
         <!-- Sidebar -->
         <Border Grid.Column="0" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,1,0">
             <StackPanel Margin="20">
-                <TextBlock Text="BALAI DESA PUCANG" FontWeight="Bold" FontSize="12" Foreground="#6B7280" Margin="0,0,0,4"/>
-                <TextBlock Text="Admin Panel" FontWeight="SemiBold" FontSize="20" Margin="0,0,0,30"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,24" VerticalAlignment="Center">
+                    <Image Source="logo.png" Width="44" Height="44" Margin="0,0,12,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="DESA PUCANG" FontWeight="Bold" FontSize="11" Foreground="#059669"/>
+                        <TextBlock Text="Inventaris Aset" FontWeight="Bold" FontSize="17" Foreground="#111827"/>
+                    </StackPanel>
+                </StackPanel>
                 
                 <Button x:Name="BtnNavDashboard" Content="Dashboard" Style="{StaticResource SidebarButtonActive}" Click="BtnNavDashboard_Click"/>
                 <Button x:Name="BtnNavAssets" Content="Data Aset" Style="{StaticResource SidebarButton}" Click="BtnNavAssets_Click"/>

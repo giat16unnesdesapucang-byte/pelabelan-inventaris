@@ -1,7 +1,7 @@
 {
-  "name": "Inventaris & Scanner Aset Desa",
-  "short_name": "Aset Desa",
-  "description": "Aplikasi Pemindaian QR Code dan Sirkulasi Peminjaman Aset Balai Desa",
+  "name": "Inventaris Aset Desa Pucang",
+  "short_name": "Aset Pucang",
+  "description": "Aplikasi Pemindaian QR Code dan Sirkulasi Peminjaman Aset Balai Desa Pucang - KKN GIAT 16 UNNES",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -9,10 +9,21 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
   ]
 }
